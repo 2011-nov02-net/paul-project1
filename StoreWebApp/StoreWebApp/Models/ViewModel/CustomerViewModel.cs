@@ -1,13 +1,15 @@
-﻿using System;
+﻿using StoreLibrary;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
-#nullable disable
-
-namespace StoreWebApp.ViewModel
+namespace StoreWebApp.Models.ViewModel
 {
-    public partial class Customer
+    public class CustomerViewModel
     {
+
         [Required]
         [Display(Name = "Customer ID")]
         public int CustomerId { get; set; }
@@ -18,7 +20,7 @@ namespace StoreWebApp.ViewModel
         public string FirstName { get; set; }
 
         [Required]
-        [Display(Name = "First Name")]
+        [Display(Name = "Last Name")]
         [StringLength(50, ErrorMessage = "Too long, Try Again")]
         public string LastName { get; set; }
 

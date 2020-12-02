@@ -1,25 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StoreWebApp.EfModel;
+﻿using EfModel.EfModel;
+using EfModel.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Repositories.EfModel;
+using StoreLibrary;
 
-namespace Repositories
+namespace EfModel.Repositories
 {
-    public class CustomerRepo:ICustomerRepo
+    public class CustomerRepo : ICustomerRepo
     {
         private readonly DbContextOptions<project0Context> _contextOptions;
         public CustomerRepo(DbContextOptions<project0Context> contextOptions)
         {
             _contextOptions = contextOptions;
         }
-        //Add Customer
+        //Add Customers
         public void AddCustomer(string firstName, string lastName)
         {
             using var context = new project0Context(_contextOptions);
-            Customer customer = new Customer()
+            StoreLibrary.Customer customer = new StoreLibrary.Customer()
             {
                 FirstName = firstName,
                 LastName = lastName
@@ -27,15 +28,15 @@ namespace Repositories
             context.Add(customer);
             context.SaveChanges();
         }
-        //Get All Customers
-        public List<Customer> GetAllCustomer()
+        //List All Customers
+        public List<StoreLibrary.Customer> GetAllCustomers()
         {
             using var context = new project0Context(_contextOptions);
             var dbCustomers = context.Customers.ToList();
-            var result = new List<Customer>();
+            var result = new List<StoreLibrary.Customer>();
             foreach (var customer in dbCustomers)
             {
-                var _customer = new Customer()
+                var _customer = new StoreLibrary.Customer()
                 {
                     CustomerId = customer.CustomerId,
                     FirstName = customer.FirstName,
@@ -44,32 +45,28 @@ namespace Repositories
                 result.Add(_customer);
             }
             return result;
+        }
 
-        }
-        //Get Customer By Name
-        public Customer GetCustomerByName(string firstName, string lastName)
-        {
-            using var context = new project0Context(_contextOptions);
-            var dbCustomer = context.Customers.FirstOrDefault(c => c.FirstName == firstName && c.LastName == lastName);
-            return new Customer(dbCustomer.CustomerId, dbCustomer.FirstName, dbCustomer.LastName);
-        }
-        //Get Customer By Id
-        public Customer GetCustomerById(int customerId)
+        public StoreLibrary.Customer GetCustomerById(int customerId)
         {
             using var context = new project0Context(_contextOptions);
             var dbCustomer = context.Customers.FirstOrDefault(c => c.CustomerId == customerId);
-            return new Customer(dbCustomer.CustomerId, dbCustomer.FirstName, dbCustomer.LastName);
+            return new StoreLibrary.Customer(dbCustomer.CustomerId, dbCustomer.FirstName, dbCustomer.LastName);
         }
-        //Update Customer
-        public void UpdateCustomer(Customer customer)
+
+        public List<StoreLibrary.Customer> GetCustomerByName(string firstName, string lastName)
         {
             using var context = new project0Context(_contextOptions);
             var dbCustomer = context.Customers
-                .Where(c => c.CustomerId == customer.CustomerId)
-                .FirstOrDefault();
-            dbCustomer.FirstName = customer.FirstName;
-            dbCustomer.LastName = customer.LastName;
-            context.SaveChanges();
+                .Where(c => c.FirstName == firstName)
+                .Where(c => c.LastName == lastName)
+                .ToList();
+            var allCustomer = new List<StoreLibrary.Customer>();
+            foreach (var customer in dbCustomer)
+            {
+                allCustomer.Add(GetCustomerById(customer.CustomerId));
+            }
+            return allCustomer;
         }
     }
 }

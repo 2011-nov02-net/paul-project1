@@ -6,10 +6,6 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "default"
-    },
-    "mssql2": {
-      "type": "mssql",
-      "connectionId": "StoreWebAppContext"
     }
   }
 }

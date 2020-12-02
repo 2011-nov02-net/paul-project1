@@ -1,15 +1,17 @@
-﻿using StoreWebApp.EfModel;
+﻿
+using StoreLibrary;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Repositories.EfModel
+namespace EfModel.Interfaces
 {
     public interface ICustomerRepo
     {
         public void AddCustomer(string firstName, string lastName);
-        public List<Customer> GetAllCustomer();
+        public List<Customer> GetAllCustomers();
         public Customer GetCustomerById(int customerId);
-        public void UpdateCustomer(Customer customer);
+        public List<Customer> GetCustomerByName(string firstName, string lastName);
+
     }
 }

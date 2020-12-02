@@ -6,17 +6,25 @@ namespace StoreLibrary
 {
     public class OrderItem
     {
-        public int OrderId { get; set; }
-        public int ProductId { get; set; }
-        public int Quantity { get; set; }
-        public decimal Total { get; set; }
+        public OrderItem()
+        {
+        }
 
-        public OrderItem(int orderId, int productId, int quantity, decimal total)
+        public OrderItem(int orderId, Product product, int quantity, decimal purchasePrice)
         {
             OrderId = orderId;
-            ProductId = productId;
+            Product = product;
             Quantity = quantity;
-            Total = total;
+            PurchasePrice = purchasePrice;
         }
+
+        public int ItemId { get; set; }
+        public int OrderId { get; set; }
+        public int ProductId { get; set; }
+        public decimal PurchasePrice { get; set; }
+        public int Quantity { get; set; }
+
+        public virtual Order Order { get; set; }
+        public virtual Product Product { get; set; }
     }
 }

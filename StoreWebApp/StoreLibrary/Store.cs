@@ -6,13 +6,18 @@ namespace StoreLibrary
 {
     public class Store
     {
-        public int StoreId { get; set; }
-        public string StoreName { get; set; }
-        public List<Inventory> Inventory { get; set; }
         public Store()
         {
-            Inventory = new List<Inventory>();
+            Inventories = new HashSet<Inventory>();
+            Orders = new HashSet<Order>();
         }
 
+        public int StoreId { get; set; }
+        public string StoreName { get; set; }
+        public DateTime Date { get; set; }
+
+
+        public virtual ICollection<Inventory> Inventories { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

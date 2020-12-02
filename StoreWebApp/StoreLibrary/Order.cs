@@ -6,18 +6,21 @@ namespace StoreLibrary
 {
     public class Order
     {
-        public int StoreId { get; set; }
-        public int OrderId { get; set; }
-        public Customer Customer { get; set; }
-        public decimal Total { get; set; }
-        public DateTime Date { get; set; }
-        public List<OrderItem> OrderItems { get; set; }
-        public Order(int storeId, Customer customer, decimal total)
+        public Order()
         {
-            StoreId = storeId;
-            Customer = customer;
-            Total = total;
-            OrderItems = new List<OrderItem>();
+            OrderItems = new HashSet<OrderItem>();
         }
+
+
+        public int OrderId { get; set; }
+
+        public int CustomerId { get; set; }
+        public int StoreId { get; set; }
+        public decimal OrderTotalPrice { get; set; }
+        public DateTime Date { get; set; }
+
+        public virtual Customer Customer { get; set; }
+        public virtual Store Store { get; set; }
+        public virtual ICollection<OrderItem> OrderItems { get; set; }
     }
 }

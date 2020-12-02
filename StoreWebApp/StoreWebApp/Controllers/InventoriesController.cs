@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using StoreWebApp.ViewModel;
+using EfModel.EfModel;
 
 namespace StoreWebApp.Controllers
 {
@@ -58,7 +58,7 @@ namespace StoreWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("InventoryId,StoreId,ProductId,Stock")] Inventory inventory)
+        public async Task<IActionResult> Create([Bind("StoreName,ProductName,InventoryId,StoreId,ProductId,Stock")] Inventory inventory)
         {
             if (ModelState.IsValid)
             {
@@ -94,7 +94,7 @@ namespace StoreWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("InventoryId,StoreId,ProductId,Stock")] Inventory inventory)
+        public async Task<IActionResult> Edit(int id, [Bind("StoreName,ProductName,InventoryId,StoreId,ProductId,Stock")] Inventory inventory)
         {
             if (id != inventory.InventoryId)
             {

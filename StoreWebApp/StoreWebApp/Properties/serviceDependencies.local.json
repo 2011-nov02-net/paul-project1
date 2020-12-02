@@ -8,11 +8,6 @@
       "type": "mssql.azure",
       "connectionId": "default",
       "secretStore": "LocalSecretsFile"
-    },
-    "mssql2": {
-      "type": "mssql.onprem",
-      "connectionId": "StoreWebAppContext",
-      "secretStore": "LocalSecretsFile"
     }
   }
 }

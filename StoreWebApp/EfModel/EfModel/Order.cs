@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace StoreWebApp.ViewModel
+namespace EfModel.EfModel
 {
     public partial class Order
     {
@@ -12,7 +12,9 @@ namespace StoreWebApp.ViewModel
             OrderItems = new HashSet<OrderItem>();
         }
 
+
         public int OrderId { get; set; }
+
         public int CustomerId { get; set; }
         public int StoreId { get; set; }
         public decimal OrderTotalPrice { get; set; }

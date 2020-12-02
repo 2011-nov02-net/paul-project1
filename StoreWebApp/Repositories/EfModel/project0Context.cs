@@ -119,10 +119,12 @@ namespace StoreWebApp.EfModel
 
             modelBuilder.Entity<OrderItem>(entity =>
             {
-                entity.HasKey(e => new { e.OrderId, e.ProductId })
-                    .HasName("PK__tmp_ms_x__022945F68450A6B4");
+                entity.HasKey(e => e.ItemId)
+                    .HasName("PK__tmp_ms_x__52020FDD116CBE28");
 
                 entity.ToTable("order_items");
+
+                entity.Property(e => e.ItemId).HasColumnName("item_id");
 
                 entity.Property(e => e.OrderId).HasColumnName("order_id");
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace StoreWebApp
+namespace StoreWebApp.ViewModel
 {
     public partial class Order
     {

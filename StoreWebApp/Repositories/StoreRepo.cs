@@ -4,17 +4,20 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using Repositories.EfModel;
 
 namespace Repositories
 {
-    public class StoreRepo
+    public class StoreRepo:IStoreRepo
     {
         private readonly DbContextOptions<project0Context> _contextOptions;
+        
 
         public StoreRepo(DbContextOptions<project0Context> contextOptions)
         {
             _contextOptions = contextOptions;
         }
+
         //Get All Stores
         public List<Store> GetAllStores()
         {
@@ -114,6 +117,25 @@ namespace Repositories
                 .FirstOrDefault();
             dbInventory.Stock += stock;
             context.SaveChanges();
+        }
+
+        public Store GetAllStoresById(int storeId)
+        {
+            using var context = new project0Context(_contextOptions);
+            var dbStore = context.Stores
+                .Where(s => s.StoreId == storeId)
+                .FirstOrDefault();
+            var result = new Store()
+            {
+                StoreId = dbStore.StoreId,
+                StoreName = dbStore.StoreName
+            };
+            var inventory = GetInventories(result);
+            foreach (var item in inventory)
+            {
+                result.Inventories.Add(item);
+            }
+            return result;
         }
     }
 }

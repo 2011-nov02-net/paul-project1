@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Repositories;
+using Repositories.EfModel;
 using StoreWebApp.EfModel;
 using System;
 using System.Collections.Generic;
@@ -26,10 +28,18 @@ namespace StoreWebApp
         public void ConfigureServices(IServiceCollection services)
         {
             //Add ConnectionString
-            services.AddDbContext<project0Context>(options =>
+            services.AddDbContext<EfModel.project0Context>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("default")));
+            services.AddDbContext<ViewModel.project0Context>(options =>
+               options.UseSqlServer(Configuration.GetConnectionString("default")));
+            services.AddScoped<IOrderRepo,OrderRepo>();
+            services.AddScoped<IProductRepo, ProductRepo>();
+            services.AddScoped<IStoreRepo, StoreRepo>();
+            services.AddScoped<ICustomerRepo, CustomerRepo>();
+
 
             services.AddControllersWithViews();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

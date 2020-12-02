@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Repositories.EfModel;
 using StoreWebApp.EfModel;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace Repositories
 {
-    public class ProductRepo
+    public class ProductRepo : IProductRepo
     {
         private readonly DbContextOptions<project0Context> _contextOptions;
         public ProductRepo(DbContextOptions<project0Context> contextOptions)
@@ -26,6 +27,7 @@ namespace Repositories
             context.Products.Add(_product);
             context.SaveChanges();
         }
+
         //Get all Products
         public ICollection<Product> GetAllProducts()
         {

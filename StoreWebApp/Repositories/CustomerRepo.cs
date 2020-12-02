@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Repositories.EfModel;
 
 namespace Repositories
 {
-    public class CustomerRepo
+    public class CustomerRepo:ICustomerRepo
     {
         private readonly DbContextOptions<project0Context> _contextOptions;
         public CustomerRepo(DbContextOptions<project0Context> contextOptions)
@@ -27,7 +28,7 @@ namespace Repositories
             context.SaveChanges();
         }
         //Get All Customers
-        public ICollection<Customer> GetAllCustomers()
+        public List<Customer> GetAllCustomer()
         {
             using var context = new project0Context(_contextOptions);
             var dbCustomers = context.Customers.ToList();

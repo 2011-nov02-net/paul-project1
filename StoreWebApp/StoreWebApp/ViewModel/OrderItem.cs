@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace StoreWebApp
+namespace StoreWebApp.ViewModel
 {
     public partial class OrderItem
     {
@@ -14,5 +14,6 @@ namespace StoreWebApp
 
         public virtual Order Order { get; set; }
         public virtual Product Product { get; set; }
+        public List<Product> Products { get; set; }
     }
 }

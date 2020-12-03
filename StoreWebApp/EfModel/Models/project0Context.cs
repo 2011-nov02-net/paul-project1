@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace EfModel.EfModel
+namespace EfModel.Models
 {
     public partial class project0Context : DbContext
     {
@@ -191,4 +191,3 @@ namespace EfModel.EfModel
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }
-

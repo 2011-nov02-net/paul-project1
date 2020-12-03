@@ -16,6 +16,8 @@ namespace EfModel.Interfaces
         //Inventories
         public void AddInventories(StoreLibrary.Store store, StoreLibrary.Product product, int stock);
         public List<StoreLibrary.Inventory> GetInventoriesByStore(StoreLibrary.Store store);
+
+        public List<StoreLibrary.Inventory> GetAllInventories();
         public StoreLibrary.Inventory GetInventoryById(int id);
 
     }

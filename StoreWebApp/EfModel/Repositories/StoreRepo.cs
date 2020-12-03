@@ -111,7 +111,7 @@ namespace EfModel.Repositories
             var result = new List<StoreLibrary.Inventory>();
             foreach (var item in dbInventory)
             {
-                var _item = new StoreLibrary.Inventory(item.StoreName, item.StoreId, item.ProductId, item.ProductName, item.Stock);
+                var _item = new StoreLibrary.Inventory(item.Store.StoreName, item.StoreId, item.ProductId, item.Product.ProductName, item.Stock);
                 _item.InventoryId = item.InventoryId;
 
             }
@@ -129,10 +129,31 @@ namespace EfModel.Repositories
             {
                 InventoryId = dbInventory.InventoryId,
                 StoreId = dbInventory.StoreId,
-                StoreName = dbInventory.StoreName,
-                ProductName = dbInventory.ProductName,
+                StoreName = dbInventory.Store.StoreName,
+                ProductName = dbInventory.Product.ProductName,
                 Stock = dbInventory.Stock
             };
+            return result;
+        }
+
+        public List<StoreLibrary.Inventory> GetAllInventories()
+        {
+            using var context = new project0Context(_contextOptions);
+            var dbInventory = context.Inventories.ToList();
+            var result = new List<StoreLibrary.Inventory>();
+            foreach (var item in dbInventory)
+            {
+                var _item = new StoreLibrary.Inventory()
+                {
+                    InventoryId = item.InventoryId,
+                    ProductId = item.ProductId,
+                    ProductName = item.Product.ProductName,
+                    StoreId = item.StoreId,
+                    StoreName = item.Store.StoreName,
+                    Stock = item.Stock
+                };
+                result.Add(_item);
+            }
             return result;
         }
     }

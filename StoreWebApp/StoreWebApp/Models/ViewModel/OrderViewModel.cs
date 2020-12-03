@@ -7,5 +7,6 @@ namespace StoreWebApp.Models.ViewModel
 {
     public class OrderViewModel
     {
+       
     }
 }

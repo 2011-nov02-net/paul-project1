@@ -1,80 +1,106 @@
-﻿using EfModel.EfModel;
-using EfModel.Interfaces;
+﻿using EfModel.Interfaces;
+using EfModel.Models;
 using Microsoft.EntityFrameworkCore;
+using StoreLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using StoreLibrary;
-
+using Product = StoreLibrary.Product;
 
 namespace EfModel.Repositories
 {
-    public class ProductRepo : IProductRepo
+    public class ProductRepo : IProduct
     {
         private readonly DbContextOptions<project0Context> _contextOptions;
+
         public ProductRepo(DbContextOptions<project0Context> contextOptions)
         {
             _contextOptions = contextOptions;
         }
-        public void AddProduct(StoreLibrary.Product product)
+        public void CreateProduct(Product product)
         {
             using var context = new project0Context(_contextOptions);
-            var _product = new EfModel.Product()
+            var newEntry = new Models.Product()
             {
                 ProductName = product.ProductName,
                 Price = product.Price
             };
-            context.Products.Add(_product);
+            context.Products.Add(newEntry);
             context.SaveChanges();
         }
 
-        public StoreLibrary.Product GetProductById(int productId)
-        {
-            using var context = new project0Context(_contextOptions);
-            var dbProduct = context.Products
-                .Where(p => p.ProductId == productId)
-                .FirstOrDefault();
-            var product = new StoreLibrary.Product()
-            {
-                ProductId = dbProduct.ProductId,
-                ProductName = dbProduct.ProductName,
-                Price = dbProduct.Price
-            };
-            return product;
-        }
-
-        public StoreLibrary.Product GetProductByName(string productName)
-        {
-            using var context = new project0Context(_contextOptions);
-            var dbProduct = context.Products
-                .Where(p => p.ProductName == productName)
-                .FirstOrDefault();
-            var _product = new StoreLibrary.Product()
-            {
-                ProductId = dbProduct.ProductId,
-                ProductName = dbProduct.ProductName,
-                Price = dbProduct.Price
-            };
-            return _product;
-        }
-
-        public List<StoreLibrary.Product> GetProducts()
+        public List<Product> GetAllProducts()
         {
             using var context = new project0Context(_contextOptions);
             var dbProducts = context.Products.Distinct().ToList();
-            var result = new List<StoreLibrary.Product>();
-            foreach (var prod in dbProducts)
+            var result = new List<Product>();
+            foreach (var product in dbProducts)
             {
-                var product = new StoreLibrary.Product()
+                var newProduct = new Product()
                 {
-                    ProductId = prod.ProductId,
-                    ProductName = prod.ProductName,
-                    Price = prod.Price
+                    ProductId = product.ProductId,
+                    ProductName = product.ProductName,
+                    Price = product.Price
                 };
-                result.Add(product);
+                result.Add(newProduct);
             };
             return result;
+        }
+
+        public Product GetProductById(int id)
+        {
+            using var context = new project0Context(_contextOptions);
+            var dbProduct = context.Products
+                .Where(a => a.ProductId == id)
+                .FirstOrDefault();
+            if (dbProduct == null)
+            {
+                return null;
+            }
+            else
+            {
+                var newProduct = new Product()
+                {
+                    ProductId = dbProduct.ProductId,
+                    ProductName = dbProduct.ProductName,
+                    Price = dbProduct.Price
+                };
+                return newProduct;
+            }
+        }
+
+        public Product GetProductByName(string name)
+        {
+            using var context = new project0Context(_contextOptions);
+            var dbProduct = context.Products
+                .Where(a => a.ProductName == name)
+                .FirstOrDefault();
+            if (dbProduct == null)
+            {
+                return null;
+            }
+            else
+            {
+                var newProduct = new Product()
+                {
+                    ProductId = dbProduct.ProductId,
+                    ProductName = dbProduct.ProductName,
+                    Price = dbProduct.Price
+                };
+                return newProduct;
+            }
+        }
+
+        public void UpdateProduct(Product product)
+        {
+            using var context = new project0Context(_contextOptions);
+            var dbProduct = context.Products
+                .Where(a => a.ProductId == product.ProductId)
+                .FirstOrDefault();
+            dbProduct.ProductName = product.ProductName;
+            dbProduct.Price = product.Price;
+            context.SaveChanges();
         }
     }
 }

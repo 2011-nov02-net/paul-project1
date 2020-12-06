@@ -1,29 +1,35 @@
-﻿@model EfModel.EfModel.Order
+﻿@model StoreWebApp.Models.OrderViewModel
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>Add Order</h1>
 
 <h4>Order</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" id="form">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="CustomerId" class="control-label"></label>
-                <select asp-for="CustomerId" class ="form-control" asp-items="ViewBag.CustomerId"></select>
+                <label for="locationSelect">Select Store</label>
+                <select asp-for="StoreId" class="form-control" id="locationSelect">
+                    @foreach (var location in Model.StoreList)
+                    {
+                        <option value=@location.StoreId>@location.StoreName</option>
+                    }
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="StoreId" class="control-label"></label>
-                <select asp-for="StoreId" class ="form-control" asp-items="ViewBag.StoreId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="OrderTotalPrice" class="control-label"></label>
-                <input asp-for="OrderTotalPrice" class="form-control" />
-                <span asp-validation-for="OrderTotalPrice" class="text-danger"></span>
+                <label for="customerSelect">Select customer</label>
+                <select asp-for="CustomerId" class="form-control" id="customerSelect">
+                    @foreach (var customer in Model.CustomerList)
+                    {
+                        <option value=@customer.CustomerId>@customer.FirstName, @customer.LastName</option>
+                    }
+                </select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

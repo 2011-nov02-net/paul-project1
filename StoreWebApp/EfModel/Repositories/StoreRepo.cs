@@ -1,160 +1,191 @@
-﻿using EfModel.EfModel;
-using EfModel.Interfaces;
+﻿using EfModel.Interfaces;
+using EfModel.Models;
 using Microsoft.EntityFrameworkCore;
+using StoreLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using StoreLibrary;
+using Inventory = StoreLibrary.Inventory;
+using Product = StoreLibrary.Product;
+using Store = StoreLibrary.Store;
 
 namespace EfModel.Repositories
 {
-    public class StoreRepo : IStoreRepo
+    public class StoreRepo : IStore
     {
-        private readonly DbContextOptions<project0Context> _contextOptions;
+        private readonly DbContextOptions<project0Context> _context;
 
-        public StoreRepo(DbContextOptions<project0Context> contextOptions)
+        public StoreRepo(DbContextOptions<project0Context> context)
         {
-            _contextOptions = contextOptions;
+            _context = context;
         }
-
-        public void AddStore(StoreLibrary.Store store)
+        public void CreateInventory(Store store, Product product, int stock)
         {
-            using var context = new project0Context(_contextOptions);
-            var _store = new EfModel.Store()
-            {
-                StoreName = store.StoreName
-            };
-            context.Stores.Add(_store);
-            context.SaveChanges();
-        }
-
-        public List<StoreLibrary.Store> GetAllStores()
-        {
-            using var context = new project0Context(_contextOptions);
-            var dbStore = context.Stores.ToList();
-            var result = new List<StoreLibrary.Store>();
-            foreach (var store in dbStore)
-            {
-                var _store = new StoreLibrary.Store()
-                {
-                    StoreId = store.StoreId,
-                    StoreName = store.StoreName
-                };
-                result.Add(_store);
-            }
-            return result;
-        }
-
-        public StoreLibrary.Store GetStoreById(int storeId)
-        {
-            using var context = new project0Context(_contextOptions);
-            var dbStore = context.Stores
-                .Where(s => s.StoreId == storeId)
-                .FirstOrDefault();
-            var result = new StoreLibrary.Store()
-            {
-                StoreId = dbStore.StoreId,
-                StoreName = dbStore.StoreName
-            };
-            result.StoreId = dbStore.StoreId;
-            var inventory = GetInventoriesByStore(result);
-            foreach (var item in inventory)
-            {
-                result.Inventories.Add(item);
-            }
-            return result;
-        }
-
-        public StoreLibrary.Store GetStoreByName(string storeName)
-        {
-            using var context = new project0Context(_contextOptions);
-            var dbStore = context.Stores.FirstOrDefault(s => s.StoreName == storeName);
-            var result = new StoreLibrary.Store()
-            {
-                StoreId = dbStore.StoreId,
-                StoreName = dbStore.StoreName
-            };
-            result.StoreId = dbStore.StoreId;
-            var resultInventory = GetInventoriesByStore(result);
-            foreach (var item in resultInventory)
-            {
-                result.Inventories.Add(item);
-            }
-            return result;
-        }
-
-       
-        //Inventories
-        public void AddInventories(StoreLibrary.Store store, StoreLibrary.Product product, int stock)
-        {
-            using var context = new project0Context(_contextOptions);
-            var currentStore = store;
+            using var context = new project0Context(_context);
+            var currentLocation = store;
             var currentProduct = product;
-            var _inventory = new EfModel.Inventory()
+            var newEntry = new Models.Inventory()
             {
-                StoreId = currentStore.StoreId,
+                StoreId = currentLocation.StoreId,
                 ProductId = currentProduct.ProductId,
                 Stock = stock
             };
-            context.Inventories.Add(_inventory);
+            context.Inventories.Add(newEntry);
             context.SaveChanges();
         }
 
-        public List<StoreLibrary.Inventory> GetInventoriesByStore(StoreLibrary.Store store)
+        public void CreateStore(Store location)
         {
-            using var context = new project0Context(_contextOptions);
+            using var context = new project0Context(_context);
+            var newEntry = new Models.Store()
+            {
+                StoreName = location.StoreName
+            };
+            context.Stores.Add(newEntry);
+            context.SaveChanges();
+        }
+
+        public void DeleteStore(Store store)
+        {
+            using var context = new project0Context(_context);
+            var dbLocation = context.Stores
+                .Where(i => i.StoreId == store.StoreId)
+                .FirstOrDefault();
+            context.Remove(dbLocation);
+            context.SaveChanges();
+        }
+
+        public List<Store> GetAllStore()
+        {
+            using var context = new project0Context(_context);
+            var dbLocations = context.Stores.Distinct().ToList();
+            var result = new List<Store>();
+            foreach (var location in dbLocations)
+            {
+                var newLocation = new Store()
+                {
+                    StoreId = location.StoreId,
+                    StoreName = location.StoreName
+                };
+                result.Add(newLocation);
+            };
+            return result;
+        }
+
+        public Inventory GetInventoryById(int? id)
+        {
+            using var context = new project0Context(_context);
+            var dbInventory = context.Inventories
+                .Where(i => i.InventoryId == id)
+                .Include(i => i.Product)
+                .FirstOrDefault();
+            if (dbInventory == null)
+            {
+                return null;
+            }
+            else
+            {
+                var result = new Inventory()
+                {
+                    InventoryId = dbInventory.InventoryId,
+                    StoreId = dbInventory.StoreId,
+                    ProductName = dbInventory.Product.ProductName,
+                    Stock = dbInventory.Stock
+                };
+                return result;
+            }
+        }
+
+        public List<Inventory> GetInventoryByStore(Store store)
+        {
+            using var context = new project0Context(_context);
             var dbInventory = context.Inventories
                 .Where(i => i.StoreId == store.StoreId)
                 .Include(i => i.Product)
                 .ToList();
-            var result = new List<StoreLibrary.Inventory>();
+            var result = new List<Inventory>();
             foreach (var item in dbInventory)
             {
-                var _item = new StoreLibrary.Inventory(item.Store.StoreName, item.StoreId, item.ProductId, item.Product.ProductName, item.Stock);
-                _item.InventoryId = item.InventoryId;
-
-            }
-            return result;
-        }
-
-        public StoreLibrary.Inventory GetInventoryById(int inventoryId)
-        {
-            using var context = new project0Context(_contextOptions);
-            var dbInventory = context.Inventories
-                .Where(i => i.InventoryId == inventoryId)
-                .Include(i => i.Product)
-                .FirstOrDefault();
-            var result = new StoreLibrary.Inventory()
-            {
-                InventoryId = dbInventory.InventoryId,
-                StoreId = dbInventory.StoreId,
-                StoreName = dbInventory.Store.StoreName,
-                ProductName = dbInventory.Product.ProductName,
-                Stock = dbInventory.Stock
-            };
-            return result;
-        }
-
-        public List<StoreLibrary.Inventory> GetAllInventories()
-        {
-            using var context = new project0Context(_contextOptions);
-            var dbInventory = context.Inventories.ToList();
-            var result = new List<StoreLibrary.Inventory>();
-            foreach (var item in dbInventory)
-            {
-                var _item = new StoreLibrary.Inventory()
+                var newItem = new Inventory(item.StoreId, item.Product.ProductName, item.Stock)
                 {
-                    InventoryId = item.InventoryId,
-                    ProductId = item.ProductId,
-                    ProductName = item.Product.ProductName,
-                    StoreId = item.StoreId,
-                    StoreName = item.Store.StoreName,
-                    Stock = item.Stock
+                    InventoryId = item.InventoryId
                 };
-                result.Add(_item);
+                result.Add(newItem);
             }
             return result;
+        }
+
+        public Store GetLocationByName(string storeName)
+        {
+            using var context = new project0Context(_context);
+            var dbLocation = context.Stores
+                .FirstOrDefault(l => l.StoreName == storeName);
+            if (dbLocation != null)
+            {
+                var result = new Store()
+                {
+                    StoreId = dbLocation.StoreId,
+                    StoreName = dbLocation.StoreName
+                };
+                var resultInv = GetInventoryByStore(result);
+                foreach (var thing in resultInv)
+                {
+                    result.Inventories.Add(thing);
+                }
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Store GetStoreById(int storeId)
+        {
+            using var context = new project0Context(_context);
+            var dbLocation = context.Stores
+                .Where(l => l.StoreId == storeId)
+                .FirstOrDefault();
+            if (dbLocation == null)
+            {
+                return null;
+            }
+            else
+            {
+                var result = new Store()
+                {
+                    StoreId = dbLocation.StoreId,
+                    StoreName = dbLocation.StoreName
+                };
+                var resultInv = GetInventoryByStore(result);
+                foreach (var thing in resultInv)
+                {
+                    result.Inventories.Add(thing);
+                }
+                return result;
+            }
+        }
+
+        public void UpdateInventory(int storeId, string productName, int stock)
+        {
+            using var context = new project0Context(_context);
+            var dbInventory = context.Inventories
+                .Include(i => i.Product)
+                .Where(i => i.StoreId == storeId && i.Product.ProductName == productName)
+                .FirstOrDefault();
+            dbInventory.Stock = stock;
+            context.SaveChanges();
+        }
+
+        public void UpdateStore(Store store)
+        {
+            using var context = new project0Context(_context);
+            var dbLocation = context.Stores
+                .Where(i => i.StoreId == store.StoreId)
+                .FirstOrDefault();
+            dbLocation.StoreName = store.StoreName;
+            context.SaveChanges();
         }
     }
 }

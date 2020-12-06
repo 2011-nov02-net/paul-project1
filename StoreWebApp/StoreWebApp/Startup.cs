@@ -1,5 +1,5 @@
-using EfModel.EfModel;
 using EfModel.Interfaces;
+using EfModel.Models;
 using EfModel.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,13 +30,11 @@ namespace StoreWebApp
             services.AddDbContext<project0Context>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("default")));
 
-            services.AddScoped<IOrderRepo, OrderRepo>();
-            services.AddScoped<IProductRepo, ProductRepo>();
-            services.AddScoped<IStoreRepo, StoreRepo>();
-            services.AddScoped<ICustomerRepo, CustomerRepo>();
-
+            services.AddScoped<IOrder, OrderRepo>();
+            services.AddScoped<IProduct, ProductRepo>();
+            services.AddScoped<IStore, StoreRepo>();
+            services.AddScoped<ICustomer, CustomerRepo>();
             services.AddControllersWithViews();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,6 +62,21 @@ namespace StoreWebApp
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "store",
+                    pattern: "{controller=Stores}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "customer",
+                    pattern: "{controller=Customers}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "customer",
+                    pattern: "{controller=Orders}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "product",
+                    pattern: "{controller=Products}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "inventory",
+                    pattern: "{controller=Inventories}/{action=Index}/{id?}");
             });
         }
     }

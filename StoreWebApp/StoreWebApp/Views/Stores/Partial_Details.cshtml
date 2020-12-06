@@ -1,0 +1,29 @@
+﻿@model IEnumerable<StoreLibrary.Inventory>
+
+<div>
+    <table class="table">
+        <tr>
+            <th>
+                Products
+            </th>
+            <th>
+                Stock
+            </th>
+            <th></th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Stock)
+                </td>
+                <td>
+                    @Html.ActionLink("Import Product", "AddToInventory", new { id = item.InventoryId })
+                </td>
+            </tr>
+        }
+    </table>
+</div>

@@ -24,15 +24,6 @@ namespace EfModel.Models
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Store> Stores { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=tcp:paul-training-server.database.windows.net,1433;Initial Catalog=project0;Persist Security Info=False;User ID=paul.cortez;Password=Qwerty12345;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Customer>(entity =>
@@ -72,20 +63,19 @@ namespace EfModel.Models
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.Inventories)
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__Inventory__produ__3E723F9C");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Inventory__produ__2759D01A");
 
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.Inventories)
                     .HasForeignKey(d => d.StoreId)
-                    .HasConstraintName("FK__Inventory__store__3F6663D5");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Inventory__store__284DF453");
             });
 
             modelBuilder.Entity<Order>(entity =>
             {
                 entity.ToTable("order");
-
-                entity.HasIndex(e => e.CustomerId, "UQ__tmp_ms_x__CD65CB849985728C")
-                    .IsUnique();
 
                 entity.Property(e => e.OrderId).HasColumnName("order_id");
 
@@ -96,29 +86,29 @@ namespace EfModel.Models
                     .HasColumnName("date")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.OrderTotalPrice)
+                entity.Property(e => e.OrderTotal)
                     .HasColumnType("money")
-                    .HasColumnName("order_totalPrice");
+                    .HasColumnName("order_total");
 
                 entity.Property(e => e.StoreId).HasColumnName("store_id");
 
                 entity.HasOne(d => d.Customer)
-                    .WithOne(p => p.Order)
-                    .HasForeignKey<Order>(d => d.CustomerId)
+                    .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.CustomerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__order__customer___451F3D2B");
+                    .HasConstraintName("FK__order__customer___2D12A970");
 
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.StoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__order__store_id__46136164");
+                    .HasConstraintName("FK__order__store_id__2E06CDA9");
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.HasKey(e => e.ItemId)
-                    .HasName("PK__tmp_ms_x__52020FDD116CBE28");
+                    .HasName("PK__order_it__52020FDD99252095");
 
                 entity.ToTable("order_items");
 
@@ -128,23 +118,23 @@ namespace EfModel.Models
 
                 entity.Property(e => e.ProductId).HasColumnName("product_id");
 
-                entity.Property(e => e.PurchasePrice)
-                    .HasColumnType("money")
-                    .HasColumnName("purchase_price");
-
                 entity.Property(e => e.Quantity).HasColumnName("quantity");
+
+                entity.Property(e => e.Total)
+                    .HasColumnType("money")
+                    .HasColumnName("total");
 
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__order_ite__order__4707859D");
+                    .HasConstraintName("FK__order_ite__order__32CB82C6");
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__order_ite__produ__39AD8A7F");
+                    .HasConstraintName("FK__order_ite__produ__31D75E8D");
             });
 
             modelBuilder.Entity<Product>(entity =>

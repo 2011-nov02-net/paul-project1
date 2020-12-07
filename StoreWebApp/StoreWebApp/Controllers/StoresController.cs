@@ -1,4 +1,5 @@
 ﻿using EfModel.Interfaces;
+using EfModel.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Inventory = StoreLibrary.Inventory;
+using Order = StoreLibrary.Order;
+using Product = StoreLibrary.Product;
+using Store = StoreLibrary.Store;
 
 namespace StoreWebApp.Controllers
 {
@@ -18,39 +23,38 @@ namespace StoreWebApp.Controllers
         private readonly IProduct _productRepo;
         private readonly IOrder _orderRepo;
         private readonly ILogger<StoresController> _logger;
-        public StoresController(ILogger<StoresController> logger, IStore storeRepo, IProduct productRepo, IOrder orderRepo)
+        private readonly project0Context _context;
+        public StoresController(ILogger<StoresController> logger, IStore storeRepo, IProduct productRepo, IOrder orderRepo,project0Context context)
         {
             _logger = logger;
             _storeRepo = storeRepo;
             _productRepo = productRepo;
             _orderRepo = orderRepo;
+            _context = context;     
         }
 
         // GET: StoresController
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var result = _storeRepo.GetAllStore().Select(x => new StoreViewModel
-            {
-                StoreId = x.StoreId,
-                StoreName = x.StoreName
-            });
-            return View(result);
+            return View(await _context.Stores.ToListAsync());
         }
 
-        // GET: StoresController/Details/5
-        public IActionResult Details(int id)
+        // GET: Stores1/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                throw new Exception("Controller Error!");
+                return NotFound();
             }
-            var location = _storeRepo.GetStoreById(id);
-            if (location == null)
+
+            var store = await _context.Stores
+                .FirstOrDefaultAsync(m => m.StoreId == id);
+            if (store == null)
             {
-                throw new Exception("Controller Error!");
+                return NotFound();
             }
-            TempData["StoreId"] = location.StoreId;
-            return View(location);
+
+            return View(store);
         }
 
         // GET: StoresController/Create
@@ -141,45 +145,44 @@ namespace StoreWebApp.Controllers
         }
 
 
-        // GET: StoresController/Edit/5
-        public IActionResult Edit(int id)
+        // GET: Stores1/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                throw new Exception("Controller Error!");
+                return NotFound();
             }
-            var location = _storeRepo.GetStoreById(id);
-            if (location == null)
+
+            var store = await _context.Stores.FindAsync(id);
+            if (store == null)
             {
-                throw new Exception("Controller Error");
+                return NotFound();
             }
-            var result = new StoreViewModel(location);
-            return View(result);
+            return View(store);
         }
 
-        // POST: StoresController/Edit/5
+        // POST: Stores1/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id,City")] Store store)
+        public async Task<IActionResult> Edit(int id, [Bind("StoreId,StoreName,Date")] Store store)
         {
             if (id != store.StoreId)
             {
                 return NotFound();
             }
-            if (StoreExists(store.StoreName))
-            {
-                TempData["StoreExistError"] = $"Store '{store.StoreName}' already exists.";
-                return RedirectToAction("Edit", new { id = store.StoreId });
-            }
-            else if (ModelState.IsValid)
+
+            if (ModelState.IsValid)
             {
                 try
                 {
-                    _storeRepo.UpdateStore(store);
+                    _context.Update(store);
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (StoreExists(id))
+                    if (!StoreExists(store.StoreId))
                     {
                         return NotFound();
                     }
@@ -192,6 +195,7 @@ namespace StoreWebApp.Controllers
             }
             return View(store);
         }
+
 
         public IActionResult AddToInventory(int id)
         {
@@ -227,50 +231,49 @@ namespace StoreWebApp.Controllers
         public IActionResult StoreOrders(int id)
         {
             var location = _storeRepo.GetStoreById(id);
-            List<Order> result = _orderRepo.GetOrdersByStore(location);
+            var result = _orderRepo.GetOrdersByStore(location);
             return View(result);
         }
-        
-        public IActionResult Delete(int id)
+
+        // GET: Stores1/Delete/5
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                throw new Exception("Controller Error!");
-            }
-            var location = _storeRepo.GetStoreById(id);
-            if (location == null)
-            {
-                throw new Exception("Controller Error!");
+                return NotFound();
             }
 
-            return View(location);
+            var store = await _context.Stores
+                .FirstOrDefaultAsync(m => m.StoreId == id);
+            if (store == null)
+            {
+                return NotFound();
+            }
+
+            return View(store);
         }
 
-        // POST: StoresController/Delete/5
-        [HttpPost]
+        // POST: Stores1/Delete/5
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var location = _storeRepo.GetStoreById(id);
-            _storeRepo.DeleteStore(location);
+            var store = await _context.Stores.FindAsync(id);
+            _context.Stores.Remove(store);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        private bool StoreExists(int id)
+        {
+            return _context.Stores.Any(e => e.StoreId == id);
+        }
+
+
         private bool StoreExists(string storeName)
         {
             bool exist = (_storeRepo.GetLocationByName(storeName) != null);
             return exist;
-        }
-        private bool StoreExists(int id)
-        {
-            try
-            {
-                _storeRepo.GetStoreById(id);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            return true;
         }
 
         public bool ProductExists(string productName)

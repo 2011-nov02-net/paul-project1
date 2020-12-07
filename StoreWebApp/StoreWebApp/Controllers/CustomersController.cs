@@ -1,180 +1,152 @@
-﻿using EfModel.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using StoreLibrary;
-using StoreWebApp.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using EfModel.Models;
 
 namespace StoreWebApp.Controllers
 {
     public class CustomersController : Controller
     {
-        private readonly ICustomer _customerRepo;
-        private readonly IOrder _orderRepo;
-        private readonly ILogger<CustomersController> _logger;
-        public CustomersController(ILogger<CustomersController> logger, ICustomer customerRepo, IOrder orderRepo)
+        private readonly project0Context _context;
+
+        public CustomersController(project0Context context)
         {
-            _logger = logger;
-            _customerRepo = customerRepo;
-            _orderRepo = orderRepo;
-        }
-        // GET: CustomersController
-        public IActionResult Index(string firstName)
-        {
-            List<Customer> customerList = _customerRepo.GetAllCustomers();
-            var result = new List<CustomerViewModel>();
-            foreach (var cust in customerList)
-            {
-                var newCust = new CustomerViewModel(cust);
-                result.Add(newCust);
-            }
-            if (!String.IsNullOrEmpty(firstName))
-            {
-                result = (List<CustomerViewModel>)result.Where(s => s.FirstName.Contains(firstName));
-            }
-            return View(result);
+            _context = context;
         }
 
-        // GET: CustomersController/Details/5
-        public IActionResult Details(int? id)
+        // GET: Customers
+        public async Task<IActionResult> Index()
         {
+            return View(await _context.Customers.ToListAsync());
+        }
 
+        // GET: Customers/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
             if (id == null)
-
             {
-                return Error();
+                return NotFound();
             }
-            var customer = _customerRepo.GetCustomerById(id);
+
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(m => m.CustomerId == id);
             if (customer == null)
             {
-                return Error();
+                return NotFound();
             }
-            var result = new CustomerViewModel(customer);
-            return View(result);
+
+            return View(customer);
         }
 
-        // GET: CustomersController/Create
+        // GET: Customers/Create
         public IActionResult Create()
         {
-            if (!ModelState.IsValid)
-            {
-                return Error();
-            }
             return View();
         }
 
-        // POST: CustomersController/Create
+        // POST: Customers/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Customer customer)
+        public async Task<IActionResult> Create([Bind("CustomerId,FirstName,LastName,Date")] Customer customer)
         {
-            try
-            {
-                _customerRepo.CreateCustomer(customer);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: CustomersController/Edit/5
-        public IActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return Error();
-            }
-            var customer = _customerRepo.GetCustomerById(id);
-            if (customer == null)
-            {
-                return Error();
-            }
-            var result = new CustomerViewModel(customer);
-            return View(result);
-
-        }
-
-        // POST: CustomersController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Customer customer)
-        {
-            if (id != customer.CustomerId)
-            {
-                return Error();
-            }
             if (ModelState.IsValid)
-            try
             {
-                _customerRepo.UpdateCustomer(customer);
+                _context.Add(customer);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            catch(DbUpdateConcurrencyException)
-            {
-
-                    return Error();
-
             }
             return View(customer);
         }
 
-        // GET: CustomersController/Delete/5
-        public IActionResult Delete(int? id)
+        // GET: Customers/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
-                return Error();
+                return NotFound();
             }
-            var customer = _customerRepo.GetCustomerById(id);
+
+            var customer = await _context.Customers.FindAsync(id);
             if (customer == null)
             {
-                return Error();
+                return NotFound();
             }
-            var result = new CustomerViewModel(customer);
-            return View(result);
+            return View(customer);
         }
 
-        // POST: CustomersController/Delete/5
+        // POST: Customers/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Edit(int id, [Bind("CustomerId,FirstName,LastName,Date")] Customer customer)
         {
-            try
+            if (id != customer.CustomerId)
             {
-                var customer = _customerRepo.GetCustomerById(id);
-                _customerRepo.DeleteCustomer(customer);
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(customer);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CustomerExists(customer.CustomerId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            return View(customer);
+        }
+
+        // GET: Customers/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
             {
-                return View();
+                return NotFound();
             }
-        }
-        private bool CustomerIdExists(int id)
-        {
-            bool exist = (_customerRepo.GetCustomerById(id) != null);
-            return exist;
+
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(m => m.CustomerId == id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            return View(customer);
         }
 
-        public IActionResult CustomerOrders(int id)
+        // POST: Customers/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var customer = _customerRepo.GetCustomerById(id);
-            List<Order> result = _orderRepo.GetOrdersByCustomer(customer);
-            return View(result);
+            var customer = await _context.Customers.FindAsync(id);
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Error()
+        private bool CustomerExists(int id)
         {
-            _logger.LogError($"Error in customer controller");
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return _context.Customers.Any(e => e.CustomerId == id);
         }
     }
 }

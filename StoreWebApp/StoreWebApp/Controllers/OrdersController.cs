@@ -1,6 +1,9 @@
 ﻿using EfModel.Interfaces;
+using EfModel.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StoreLibrary;
 using StoreWebApp.Models;
@@ -8,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Order = StoreLibrary.Order;
+using OrderItem = StoreLibrary.OrderItem;
 
 namespace StoreWebApp.Controllers
 {
@@ -18,13 +23,15 @@ namespace StoreWebApp.Controllers
         private readonly IOrder _orderRepo;
         private readonly IProduct _productRepo;
         private readonly ILogger<OrdersController> _logger;
-        public OrdersController(ILogger<OrdersController> logger, ICustomer customerRepo, IStore storeRepo, IOrder orderRepo, IProduct productRepo)
+        private readonly project0Context _context;
+        public OrdersController(ILogger<OrdersController> logger, ICustomer customerRepo, IStore storeRepo, IOrder orderRepo, IProduct productRepo, project0Context context)
         {
             _logger = logger;
             _customerRepo = customerRepo;
             _storeRepo = storeRepo;
             _orderRepo = orderRepo;
             _productRepo = productRepo;
+            _context = context;
         }
 
 
@@ -51,14 +58,14 @@ namespace StoreWebApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                throw new Exception("Controller Error!");
+                return NotFound();
             }
             else
             {
                 var result = _orderRepo.GetOrderById(id);
-                if (result == null)
+                if(result == null)
                 {
-                    throw new Exception("Controller Error!");
+                    return NotFound();
                 }
                 else
                 {
@@ -111,7 +118,7 @@ namespace StoreWebApp.Controllers
             foreach (var orderItem in orderViewModel.OrderItems)
             {
                 var animal = _productRepo.GetProductById(orderItem.ProductId);
-                var newItem = new OrderItem(0, animal, orderItem.Quantity, orderItem.Total);
+                var newItem = new StoreLibrary.OrderItem(0, animal, orderItem.Quantity, orderItem.Total);
                 result.OrderItems.Add(newItem);
             }
             var resultOrder = _orderRepo.ReturnOrder(result);
@@ -194,55 +201,95 @@ namespace StoreWebApp.Controllers
                 throw new Exception("Controller Error!");
             }
         }
-
-        public IActionResult Edit(int id)
+        // GET: Orders1/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                throw new Exception("Controller Error!");
+                return NotFound();
             }
-            return View();
-        }
 
-        // POST: OrdersController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Order order)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Order/Delete/5
-        public ActionResult Delete(int id)
-        {
-            if (!ModelState.IsValid)
-            {
-                throw new Exception("Controller Error!");
-            }
-            var order = _orderRepo.GetOrderById(id);
+            var order = await _context.Orders.FindAsync(id);
             if (order == null)
             {
-                throw new Exception("Controller Error!");
+                return NotFound();
             }
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "FirstName", order.CustomerId);
+            ViewData["StoreId"] = new SelectList(_context.Stores, "StoreId", "StoreName", order.StoreId);
             return View(order);
         }
 
+        // POST: Orders1/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("OrderId,CustomerId,StoreId,OrderTotal,Date")] EfModel.Models.Order order)
+        {
+            if (id != order.OrderId)
+            {
+                return NotFound();
+            }
 
-        // POST: Order/Delete/5
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(order);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!OrderExists(order.OrderId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "FirstName", order.CustomerId);
+            ViewData["StoreId"] = new SelectList(_context.Stores, "StoreId", "StoreName", order.StoreId);
+            return View(order);
+        }
+
+        // GET: Orders1/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Store)
+                .FirstOrDefaultAsync(m => m.OrderId == id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return View(order);
+        }
+
+        // POST: Orders1/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var order = _orderRepo.GetOrderById(id);
-            _orderRepo.DeleteOrder(order);
+            var order = await _context.Orders.FindAsync(id);
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        private bool OrderExists(int id)
+        {
+            return _context.Orders.Any(e => e.OrderId == id);
         }
     }
 }

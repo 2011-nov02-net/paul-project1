@@ -1,4 +1,4 @@
-﻿@model StoreWebApp.Models.CustomerViewModel
+﻿@model EfModel.Models.Customer
 
 @{
     ViewData["Title"] = "Create";
@@ -6,12 +6,11 @@
 
 <h1>Create</h1>
 
-<h4>Customers</h4>
+<h4>Customer</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>

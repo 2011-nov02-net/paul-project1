@@ -131,7 +131,7 @@ namespace EfModel.Repositories
                 var resultInv = GetInventoryByStore(result);
                 foreach (var thing in resultInv)
                 {
-                    result.Inventories.Add(thing);
+                    result.Inventory.Add(thing);
                 }
                 return result;
             }
@@ -161,7 +161,7 @@ namespace EfModel.Repositories
                 var resultInv = GetInventoryByStore(result);
                 foreach (var thing in resultInv)
                 {
-                    result.Inventories.Add(thing);
+                    result.Inventory.Add(thing);
                 }
                 return result;
             }

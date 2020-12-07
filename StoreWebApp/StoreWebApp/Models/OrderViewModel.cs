@@ -19,9 +19,9 @@ namespace StoreWebApp.Models
         public OrderViewModel(Order order)
         {
             OrderId = order.OrderId;
-            StoreId = order.StoreId;
+            Store = order.Store.StoreId;
             StoreName = order.Store.StoreName;
-            CustomerId = order.CustomerId;
+            Customer = order.Customer.CustomerId;
             CustomerName = order.Customer.FirstName;
             Total = order.OrderTotalPrice;
             Date = order.Date;
@@ -39,11 +39,11 @@ namespace StoreWebApp.Models
         public int OrderId { get; set; }
         [Required]
         [Display(Name = "Store ID")]
-        public int StoreId { get; set; }
+        public int Store{ get; set; }
         [Display(Name = "Store Name")]
         public string StoreName { get; set; }
         [Required]
-        public int CustomerId { get; set; }
+        public int Customer { get; set; }
         [Required]
         [Display(Name = "First Name")]
         public string CustomerName { get; set; }

@@ -114,11 +114,11 @@ namespace StoreWebApp.Controllers
             if (ModelState.IsValid)
             {
                 var location = _storeRepo.GetStoreById(inventory.StoreId);
-                var productCheck = ProductExists(inventory.ProductId);
+                var productCheck = ProductExists(inventory.ProductName);
                 if (productCheck != false) 
                 {
-                    var product = _productRepo.GetProductById(inventory.ProductId);
-                    var existInventory = location.Inventory.Any(i => i.ProductId == inventory.ProductId);
+                    var product = _productRepo.GetProductByName(inventory.ProductName);
+                    var existInventory = location.Inventory.Any(i => i.ProductName == inventory.ProductName);
                     if (existInventory)
                     {
                         var invItem = location.Inventory.Find(i => i.ProductName == inventory.ProductName);
@@ -273,9 +273,9 @@ namespace StoreWebApp.Controllers
             return true;
         }
 
-        public bool ProductExists(int id)
+        public bool ProductExists(string productName)
         {
-            var product = _productRepo.GetProductById(id);
+            var product = _productRepo.GetProductByName(productName);
             if (product != null)
             {
                 return true;

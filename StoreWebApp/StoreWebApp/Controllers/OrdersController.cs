@@ -99,8 +99,8 @@ namespace StoreWebApp.Controllers
            // {
            //     throw new Exception("Controller Error!");
            // }
-            var currentLocation = _storeRepo.GetStoreById(orderViewModel.StoreId);
-            var currentCustomer = _customerRepo.GetCustomerById(orderViewModel.CustomerId);
+            var currentLocation = _storeRepo.GetStoreById(orderViewModel.Store);
+            var currentCustomer = _customerRepo.GetCustomerById(orderViewModel.Customer);
             var result = new Order
             {
                 Store = currentLocation,

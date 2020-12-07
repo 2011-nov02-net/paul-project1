@@ -17,7 +17,6 @@ namespace StoreWebApp.Models
         {
             InventoryId = inventory.InventoryId;
             StoreId = inventory.StoreId;
-            ProductId = inventory.ProductId;
             ProductName = inventory.ProductName;
             Stock = inventory.Stock;
             Products = new List<Product>();

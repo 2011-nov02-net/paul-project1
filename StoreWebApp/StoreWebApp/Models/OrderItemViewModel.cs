@@ -16,7 +16,7 @@ namespace StoreWebApp.Models
         public OrderItemViewModel(OrderItem orderItem)
         {
             OrderId = orderItem.OrderId;
-            ProductId = orderItem.ProductId;
+            ProductId = orderItem.Product.ProductId;
             Quantity = orderItem.Quantity;
             Total = orderItem.PurchasePrice;
             Products = new List<Product>();

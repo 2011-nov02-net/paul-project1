@@ -7,7 +7,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Add Order</a>
+    <a asp-action="Create">Create New Order</a> | <a asp-action="AddOrderItem">Add Item</a>
 </p>
 <table class="table">
     <thead>
@@ -16,22 +16,16 @@
                 @Html.DisplayNameFor(model => model.OrderId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StoreId)
+                Store
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StoreName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CustomerId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CustomerName)
+                Customer
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Total)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+                Date
             </th>
             <th></th>
         </tr>
@@ -43,13 +37,7 @@
                 @Html.DisplayFor(modelItem => item.OrderId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.StoreId)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.StoreName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CustomerId)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CustomerName)

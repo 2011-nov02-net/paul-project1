@@ -1,4 +1,4 @@
-﻿@model StoreWebApp.Models.StoreViewModel
+﻿@model StoreLibrary.Store
 
 @{
     ViewData["Title"] = "Details";
@@ -7,15 +7,9 @@
 <h1>Details</h1>
 
 <div>
-    <h4>StoreViewModel</h4>
+    <h4>@Model.StoreName</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StoreId)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StoreId)
-        </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.StoreName)
         </dt>
@@ -25,7 +19,7 @@
     </dl>
     <h4>Inventory</h4>
     <p>
-        <a asp-action="ImportProduct" asp-route-id="@Model.StoreId">Add New Product</a>
+        <a asp-action="ImportProduct" asp-route-id="@Model.StoreId">Add  New Product</a>
     </p>
     <hr />
     <dl class="row">
@@ -34,10 +28,10 @@
         </dd>
     </dl>
     <p>
-        <a asp-action="StoreOrders" asp-route-id="@Model.StoreId">Orders are made at this Store</a>
+        <a asp-action="LocationOrders" asp-route-id="@Model.StoreId">Orders made at this location</a>
     </p>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Edit" asp-route-id="@Model.StoreId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

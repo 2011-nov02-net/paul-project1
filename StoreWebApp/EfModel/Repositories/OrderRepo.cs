@@ -30,8 +30,8 @@ namespace EfModel.Repositories
             using var context = new project0Context(_contextOptions);
             var orderEntry = new Models.Order()
             {
-                CustomerId = order.CustomerId,
-                StoreId = order.StoreId,
+                CustomerId = order.Customer.CustomerId,
+                StoreId = order.Store.StoreId,
                 Date = order.Date,
                 OrderTotal= order.OrderTotalPrice
             };
@@ -51,7 +51,7 @@ namespace EfModel.Repositories
             var orderItemEntry = new Models.OrderItem()
             {
                 OrderId = orderItem.OrderId,
-                ProductId = orderItem.ProductId,
+                ProductId = orderItem.Product.ProductId,
                 Quantity = orderItem.Quantity,
                 Total = orderItem.PurchasePrice
             };
@@ -133,7 +133,7 @@ namespace EfModel.Repositories
             }
             var newAnimal = new Product()
             {
-                ProductId = dbOrderItem.ProductId,
+                ProductId = dbOrderItem.Product.ProductId,
                 ProductName = dbOrderItem.Product.ProductName,
                 Price = dbOrderItem.Product.Price
             };
@@ -156,11 +156,11 @@ namespace EfModel.Repositories
             {
                 var newProduct = new Product()
                 {
-                    ProductId = orderItem.ProductId,
+                    ProductId = orderItem.Product.ProductId,
                     ProductName = orderItem.Product.ProductName,
                     Price = orderItem.Product.Price
                 };
-                var newOrderItem = new OrderItem(orderItem.OrderId, newProduct, orderItem.Quantity, (decimal)orderItem.Total)
+                var newOrderItem = new OrderItem(orderItem.OrderId, newProduct, orderItem.Quantity, orderItem.Total)
                 {
                     ItemId = orderItem.ItemId
                 };
@@ -237,8 +237,8 @@ namespace EfModel.Repositories
             using var context = new project0Context(_contextOptions);
             var orderEntry = new Models.Order()
             {
-                CustomerId = order.CustomerId,
-                StoreId = order.StoreId,
+                CustomerId = order.Customer.CustomerId,
+                StoreId = order.Store.StoreId,
                 Date = order.Date,
                 OrderTotal = order.OrderTotalPrice
             };

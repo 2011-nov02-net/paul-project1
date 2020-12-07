@@ -7,6 +7,7 @@ using StoreLibrary;
 using StoreWebApp.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -41,18 +42,18 @@ namespace StoreWebApp.Controllers
         }
 
         // GET: CustomersController/Details/5
-        public IActionResult Details(int id)
+        public IActionResult Details(int? id)
         {
-#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+
             if (id == null)
-#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+
             {
-                throw new Exception("Controller Error");
+                return Error();
             }
             var customer = _customerRepo.GetCustomerById(id);
             if (customer == null)
             {
-                throw new Exception("Controller Error");
+                return Error();
             }
             var result = new CustomerViewModel(customer);
             return View(result);
@@ -63,7 +64,7 @@ namespace StoreWebApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                throw new Exception("Controller Error");
+                return Error();
             }
             return View();
         }
@@ -87,15 +88,15 @@ namespace StoreWebApp.Controllers
         // GET: CustomersController/Edit/5
         public IActionResult Edit(int? id)
         {
-           // if (id == null)
-           // {
-           //     throw new Exception("Controller Error");
-           // }
+            if (id == null)
+            {
+                return Error();
+            }
             var customer = _customerRepo.GetCustomerById(id);
-           //if (customer == null)
-           // {
-           //     throw new Exception("Controller Error");
-           // }
+            if (customer == null)
+            {
+                return Error();
+            }
             var result = new CustomerViewModel(customer);
             return View(result);
 
@@ -108,7 +109,7 @@ namespace StoreWebApp.Controllers
         {
             if (id != customer.CustomerId)
             {
-                throw new Exception("ID cannot be found");
+                return Error();
             }
             if (ModelState.IsValid)
             try
@@ -119,8 +120,8 @@ namespace StoreWebApp.Controllers
             catch(DbUpdateConcurrencyException)
             {
 
-                throw new Exception("Db Error!");
-                   
+                    return Error();
+
             }
             return View(customer);
         }
@@ -130,12 +131,12 @@ namespace StoreWebApp.Controllers
         {
             if (id == null)
             {
-                throw new Exception("Controller Error!");
+                return Error();
             }
             var customer = _customerRepo.GetCustomerById(id);
             if (customer == null)
             {
-                throw new Exception("Customer not Found");
+                return Error();
             }
             var result = new CustomerViewModel(customer);
             return View(result);
@@ -157,12 +158,23 @@ namespace StoreWebApp.Controllers
                 return View();
             }
         }
+        private bool CustomerIdExists(int id)
+        {
+            bool exist = (_customerRepo.GetCustomerById(id) != null);
+            return exist;
+        }
 
         public IActionResult CustomerOrders(int id)
         {
             var customer = _customerRepo.GetCustomerById(id);
             List<Order> result = _orderRepo.GetOrdersByCustomer(customer);
             return View(result);
+        }
+
+        public IActionResult Error()
+        {
+            _logger.LogError($"Error in customer controller");
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

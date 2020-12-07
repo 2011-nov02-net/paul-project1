@@ -108,7 +108,7 @@ namespace EfModel.Models
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.HasKey(e => e.ItemId)
-                    .HasName("PK__order_it__52020FDD99252095");
+                    .HasName("PK__order_it__52020FDD9A00B085");
 
                 entity.ToTable("order_items");
 
@@ -128,13 +128,13 @@ namespace EfModel.Models
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__order_ite__order__32CB82C6");
+                    .HasConstraintName("FK__order_ite__order__379037E3");
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__order_ite__produ__31D75E8D");
+                    .HasConstraintName("FK__order_ite__produ__369C13AA");
             });
 
             modelBuilder.Entity<Product>(entity =>

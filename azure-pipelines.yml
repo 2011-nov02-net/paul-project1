@@ -41,7 +41,7 @@ stages:
 #        publishTestResults: true
 #        workingDirectory: StoreWebApp
 
-    - script: dotnet publish --configuration $(buildConfiguration) --output
+    - script: dotnet publish --configuration $(buildConfiguration) --output publish
       displayName: dotnet publish
       workingDirectory: StoreWebApp
 

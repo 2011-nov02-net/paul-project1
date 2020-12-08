@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Desktop\Save\StoreLibrary\StoreLibrary.csproj" />
     <ProjectReference Include="..\EfModel\EfModel.csproj" />
+    <ProjectReference Include="..\StoreLibrary\StoreLibrary.csproj" />
   </ItemGroup>
 
 </Project>

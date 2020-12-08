@@ -33,13 +33,13 @@ stages:
       displayName: dotnet build
       workingDirectory: StoreWebApp
 
-#    - task: DotNetCoreCLI@2
-#      displayName: dotnet test
-#      inputs:
-#        command: 'test'
-#        arguments: '--configuration $(buildConfiguration)'
-#        publishTestResults: true
-#        workingDirectory: StoreWebApp
+    - task: DotNetCoreCLI@2
+      displayName: dotnet test
+      inputs:
+        command: 'test'
+        arguments: '--configuration $(buildConfiguration)'
+        publishTestResults: true
+        workingDirectory: StoreWebApp
 
     - script: dotnet publish --configuration $(buildConfiguration) --output publish
       displayName: dotnet publish

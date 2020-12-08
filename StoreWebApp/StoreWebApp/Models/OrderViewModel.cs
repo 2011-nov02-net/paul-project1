@@ -23,6 +23,7 @@ namespace StoreWebApp.Models
             StoreName = order.Store.StoreName;
             Customer = order.Customer.CustomerId;
             CustomerName = order.Customer.FirstName;
+            CustomerLName = order.Customer.LastName;
             Total = order.OrderTotalPrice;
             Date = order.Date;
             StoreList = new List<Store>();
@@ -47,6 +48,8 @@ namespace StoreWebApp.Models
         [Required]
         [Display(Name = "First Name")]
         public string CustomerName { get; set; }
+        [Display(Name = "Last Name")]
+        public string CustomerLName { get; set; }
         [Display(Name = "Total Price")]
         [DataType(DataType.Currency)]
         public decimal Total { get; set; }

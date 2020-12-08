@@ -17,10 +17,16 @@
             @Html.DisplayFor(model => model.OrderId)
         </dd>
         <dt class="col-sm-2">
-            Customer
+            Customer First Name
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Customer.FirstName)
+        </dd>
+        <dt class="col-sm-2">
+            Customer Last Name
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Customer.LastName)
         </dd>
         <dt class="col-sm-2">
             Store
@@ -44,7 +50,7 @@
     <table class="table">
         <tr>
             <th>
-                Animal
+                Product
             </th>
             <th>
                 Quantity
@@ -71,7 +77,7 @@
     </table>
 </div>
 <div>
-    <a asp-action="AddOrderItem" asp-route-id="@Model.OrderId">Add Product to order</a> |
+    <a asp-action="AddOrderItem" asp-route-id="@Model.OrderId">Add another Item to order</a> |
     <a asp-action="Index">Back to List</a>
 </div>
 

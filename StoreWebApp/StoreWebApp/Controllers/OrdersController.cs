@@ -161,7 +161,7 @@ namespace StoreWebApp.Controllers
                 var invItem = locationInventory.Find(i => i.ProductName == product.ProductName);
                 if (invItem.Stock - orderItem.Quantity < 0) 
                 {
-                    TempData["QuantityError"] = $"Error. Quantity is too high, not enough {product.ProductName}(s) in inventory. Currently have {invItem.Stock} {product.ProductName}(s) in stock.";
+                    TempData["QuantityError"] = $"Error. Quantity is too many, not enough {product.ProductName}(s) in inventory. Currently have {invItem.Stock} {product.ProductName}(s) in stock.";
                     return RedirectToAction("AddOrderItem", new { OrderId = orderItem.OrderId });
                 }
                 else

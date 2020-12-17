@@ -63,4 +63,4 @@ The landing page will be the home page. In the dashboard you can see Customers, 
 
 ## License
 
-This project uses the following license: [<license_name>](<link>).
+This project uses the following license: MIT License(<link>).

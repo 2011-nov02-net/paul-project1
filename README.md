@@ -7,6 +7,9 @@ This StoreWebApplication is for Administrators only.
 ## Technologies Used
 
 * ASP.NET Core - version 5.0
+* C#
+* Transact SQL
+* Razor Syntax
 * .NET Standard Library - version 2.1
 * GitHub - hub 2.14.2
 * Visual Studio - version 16.7
